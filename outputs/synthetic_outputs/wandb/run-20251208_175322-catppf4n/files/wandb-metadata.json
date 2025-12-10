@@ -1,0 +1,36 @@
+{
+  "os":  "Windows-11-10.0.26200-SP0",
+  "python":  "CPython 3.13.9",
+  "startedAt":  "2025-12-08T16:53:22.290217Z",
+  "program":  "C:\\Users\\Boudj\\Downloads\\metalearning-symmetries-master\\metalearning-symmetries-master\\train_synthetic.py",
+  "codePath":  "metalearning-symmetries-master\\train_synthetic.py",
+  "codePathLocal":  "metalearning-symmetries-master\\train_synthetic.py",
+  "email":  "boudjemaa.salah.275@gmail.com",
+  "root":  "./outputs/synthetic_outputs",
+  "host":  "DESKTOP-QQM4QQG",
+  "executable":  "C:\\Users\\Boudj\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+  "cpu_count":  8,
+  "cpu_count_logical":  16,
+  "gpu":  "NVIDIA GeForce RTX 4070 SUPER",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "999261466624",
+      "used":  "667060060160"
+    }
+  },
+  "memory":  {
+    "total":  "33485791232"
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 4070 SUPER",
+      "memoryTotal":  "12878610432",
+      "cudaCores":  7168,
+      "architecture":  "Ada",
+      "uuid":  "GPU-d55693f6-c9cf-9be4-6ad8-340c6d4c6012"
+    }
+  ],
+  "cudaVersion":  "13.0",
+  "writerId":  "cs666us22d9vbqdthbx8jvcibkcye3g4"
+}

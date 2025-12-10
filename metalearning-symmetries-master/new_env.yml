@@ -1,0 +1,34 @@
+name: new_env
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  # Python et base
+  - python=3.7.5 
+  
+  # Outils GPU/CUDA (Le canal pytorch aidera à trouver la bonne version)
+  - cudatoolkit=10.1 
+
+  # Data Science / Machine Learning
+  - numpy=1.17
+  - scipy=1.4
+  - scikit-learn=0.22
+  - pandas=1.0
+  - dask-core=2.13
+  - joblib
+  - pillow=7.0
+  
+  # Visualisation et Multimédia
+  - matplotlib=3.1
+  - opencv=3.4
+  - imageio=2.8
+  - imgaug=0.4
+  - shapely=1.7
+  
+  # Jupyter/IDE
+  - notebook=6.0
+  - jupyter_client
+  - ipykernel=5.1
+  - ipywidgets=7.5
+  - prompt_toolkit
