@@ -63,7 +63,9 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
     inner_opt = inner_opt_builder.inner_opt
 
     qry_losses = []
+    total_acc = 0
     for i in range(task_num):
+        #print("task ", i)
         with higher.innerloop_ctx(
             net, inner_opt, track_higher_grads=False, override=inner_opt_builder.overrides,
         ) as (
@@ -75,14 +77,28 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
                 spt_loss = F.mse_loss(spt_pred, y_spt[i])
                 diffopt.step(spt_loss)
             qry_pred = fnet(x_qry[i])
+
+            num_acc = 0 #accuracy par tache
+            for a,b in zip(torch.argmax(qry_pred, dim=1),torch.argmax(y_qry[i], dim=1)):
+                if a==b:
+                    num_acc+=1
+            total_acc += num_acc / len(qry_pred)
+
+            #print("pred" , torch.argmax(qry_pred, dim=1)) #valeurs prédites
+            #print("true" , torch.argmax(y_qry[i], dim=1)) #valeurs réelles
             qry_loss = F.mse_loss(qry_pred, y_qry[i])
             qry_losses.append(qry_loss.detach().cpu().numpy())
+
+    total_acc = (total_acc / task_num)*100
+    print("Accuracy totale: ", total_acc, "%")
     avg_qry_loss = np.mean(qry_losses)
     _low, high = st.t.interval(
         0.95, len(qry_losses) - 1, loc=avg_qry_loss, scale=st.sem(qry_losses)
     )
     test_metrics = {"test_loss": avg_qry_loss, "test_err": high - avg_qry_loss}
+    test_metrics_acc = {"test_accuracy": total_acc}
     wandb.log(test_metrics, step=step_idx)
+    wandb.log(test_metrics_acc, step=step_idx)
     return avg_qry_loss
 
 
@@ -98,7 +114,7 @@ def save_checkpoint(net, inner_opt_builder, step_idx, output_dir="./outputs/chec
     }
     path = os.path.join(output_dir, f"checkpoint_step_{step_idx}.pt")
     torch.save(checkpoint, path)
-    print(f"Checkpoint saved to {path}")
+    #print(f"Checkpoint saved to {path}")
     return path
 
 
@@ -109,14 +125,14 @@ def main():
     parser.add_argument("--init_inner_lr", type=float, default=0.1)
     parser.add_argument("--outer_lr", type=float, default=0.001)
     parser.add_argument("--k_spt", type=int, default=5)
-    parser.add_argument("--k_qry", type=int, default=10)
+    parser.add_argument("--k_qry", type=int, default=8)
     parser.add_argument("--lr_mode", type=str, default="per_layer")
     parser.add_argument("--num_inner_steps", type=int, default=1)
-    parser.add_argument("--num_outer_steps", type=int, default=5000)
+    parser.add_argument("--num_outer_steps", type=int, default=1000)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
     parser.add_argument("--problem", type=str, default="mnist")
-    parser.add_argument("--model", type=str, default="conv")
+    parser.add_argument("--model", type=str, default="fc")
     parser.add_argument("--device", type=str, default="cuda")
 
     if not os.path.exists(OUTPUT_PATH):
@@ -160,7 +176,7 @@ def main():
 
     start_time = time.time()
     for step_idx in range(cfg.num_outer_steps):
-        data, _filters = db.next(32, "train")
+        data, _filters = db.next(10, "train")
         train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps)
 
         if step_idx == 0 or (step_idx + 1) % 100 == 0:
@@ -177,21 +193,25 @@ def main():
                 wandb.log({"steps_per_sec": steps_p_sec}, step=step_idx)
                 print(f"Step: {step_idx}. Steps/sec: {steps_p_sec:.2f}")
 
-            if (step_idx + 1) % 500 == 0 or (step_idx + 1) == cfg.num_outer_steps:
+            if (step_idx + 1) % 100 == 0 or (step_idx + 1) == cfg.num_outer_steps:
                     checkpoint_path = save_checkpoint(net, inner_opt_builder, step_idx + 1)
                     
+    accuracy_tab = []
 
 
+    from visualize import evaluate_checkpoint
 
-    from visualize import evaluate_checkpoint          
-    evaluate_checkpoint(
-        cfg,
-        checkpoint_path, 
-        db, 
-        net, 
-        inner_opt_builder, 
-        cfg.num_inner_steps
-    )
+    '''
+    dossier_path = "./outputs/checkpoints"    
 
+    for file in os.listdir(dossier_path):
+        if file.endswith(".pt"):
+            checkpoint_path = os.path.join(dossier_path, file)
+
+            if str(cfg.num_outer_steps) not in checkpoint_path:
+                accuracy_tab.append(evaluate_checkpoint(cfg,checkpoint_path, db, net, inner_opt_builder, cfg.num_inner_steps))
+            else:
+                accuracy_tab.append(evaluate_checkpoint(cfg,checkpoint_path, db, net, inner_opt_builder, cfg.num_inner_steps, plot=True))
+    '''
 if __name__ == "__main__":
     main()

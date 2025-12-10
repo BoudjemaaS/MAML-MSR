@@ -67,23 +67,15 @@ def load_model_and_optimizer(net, inner_opt_builder, checkpoint_path):
     return checkpoint['step']
 
 
-def evaluate_checkpoint(
-    cfg,
-    checkpoint_path, 
-    db, 
-    net, 
-    inner_opt_builder, 
-    n_inner_iter
-    
-):
+def evaluate_checkpoint(cfg, checkpoint_path, db, net, inner_opt_builder, n_inner_iter, plot=False):
     """Effectue l'évaluation et affiche la matrice de confusion."""
     n_tasks_to_test = cfg.num_outer_steps
     step_idx = load_model_and_optimizer(net, inner_opt_builder, checkpoint_path)
     
     test_data, _ = db.next(n_tasks_to_test, "test")
     x_spt, y_spt, x_qry, y_qry = test_data
-    print(len(test_data))
     
+
     task_num = x_spt.size()[0]
 
     # Préparation des étiquettes (labels)
@@ -124,11 +116,10 @@ def evaluate_checkpoint(
     # Tronquer pour assurer la même taille
     min_len = min(len(true_labels), len(predicted_labels))
 
-    size_end = (len(true_labels)//10)*9
-    true_labels = true_labels[:size_end]
-    predicted_labels = predicted_labels[:size_end]
-    print(len(true_labels), len(predicted_labels))
-    print(true_labels)
+    
+    true_labels = true_labels[:min_len]
+    predicted_labels = predicted_labels[:min_len]
+    
     # Calcul des métriques
     avg_qry_loss = np.mean(qry_losses)
     accuracy = np.sum(true_labels == predicted_labels) / len(true_labels)
@@ -139,30 +130,32 @@ def evaluate_checkpoint(
     
     # --- Visualisation de la Matrice de Confusion 🖼️ ---
     # Utilisation de la fonction NumPy personnalisée
-    cm = numpy_confusion_matrix(true_labels, predicted_labels, labels=range(10)) 
-    
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(
-        cm, 
-        annot=True, 
-        fmt="d", 
-        cmap="Blues", 
-        xticklabels=range(10), 
-        yticklabels=range(10)
-    )
-    plt.title(f"Matrice de Confusion (Checkpoint Étape {step_idx})")
-    plt.ylabel("Vraie Étiquette (True Label)")
-    plt.xlabel("Étiquette Prédite (Predicted Label)")
-    
-    # Sauvegarde de l'image
-    cm_path = os.path.join(OUTPUT_PATH, f"confusion_matrix_checkpoint_{step_idx}_no_sklearn.png")
-    os.makedirs(OUTPUT_PATH, exist_ok=True)
-    plt.savefig(cm_path)
-    plt.show()
-    plt.close()
-    
-    print(f"Matrice de confusion enregistrée dans : {cm_path}")
-    print("---------------------------------")
+    if plot:
+        cm = numpy_confusion_matrix(true_labels, predicted_labels, labels=range(10)) 
+        
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(
+            cm, 
+            annot=True, 
+            fmt="d", 
+            cmap="Blues", 
+            xticklabels=range(10), 
+            yticklabels=range(10)
+        )
+        plt.title(f"Matrice de Confusion (Checkpoint Étape {step_idx})")
+        plt.ylabel("Vraie Étiquette (True Label)")
+        plt.xlabel("Étiquette Prédite (Predicted Label)")
+        
+        # Sauvegarde de l'image
+        cm_path = os.path.join(OUTPUT_PATH, f"confusion_matrix_checkpoint_{step_idx}_no_sklearn.png")
+        os.makedirs(OUTPUT_PATH, exist_ok=True)
+        plt.savefig(cm_path)
+        plt.show()
+        plt.close()
+        
+        print(f"Matrice de confusion enregistrée dans : {cm_path}")
+        print("---------------------------------")
+    return accuracy
 
 
 def main():

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "c:\Users\Boudj\Downloads\metalearning-symmetries-master\metalearning-symmetries-master\train_synthetic.py", line 214, in <module>
+    main()
+    ~~~~^^
+  File "c:\Users\Boudj\Downloads\metalearning-symmetries-master\metalearning-symmetries-master\train_synthetic.py", line 142, in main
+    db = SyntheticLoader(device, model=cfg.model, problem=cfg.problem, k_spt=cfg.k_spt, k_qry=cfg.k_qry)
+  File "c:\Users\Boudj\Downloads\metalearning-symmetries-master\metalearning-symmetries-master\synthetic_loader.py", line 16, in __init__
+    data = np.load(TYPE_2_PATH[problem])
+  File "C:\Users\Boudj\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\numpy\lib\_npyio_impl.py", line 451, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './data/mnist_tasks.npz'

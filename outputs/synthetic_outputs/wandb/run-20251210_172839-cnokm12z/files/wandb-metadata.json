@@ -1,0 +1,17 @@
+{
+  "os":  "Windows-11-10.0.26200-SP0",
+  "python":  "CPython 3.13.9",
+  "startedAt":  "2025-12-10T16:28:39.035514Z",
+  "program":  "c:\\Users\\Boudj\\Downloads\\metalearning-symmetries-master\\metalearning-symmetries-master\\train_synthetic.py",
+  "codePath":  "metalearning-symmetries-master\\train_synthetic.py",
+  "codePathLocal":  "metalearning-symmetries-master\\train_synthetic.py",
+  "git":  {
+    "remote":  "https://github.com/BoudjemaaS/MAML-MSR.git",
+    "commit":  "0d09429df5c0aad7d61d6a22c8db2f5b8179d504"
+  },
+  "email":  "boudjemaa.salah.275@gmail.com",
+  "root":  "./outputs/synthetic_outputs",
+  "host":  "DESKTOP-QQM4QQG",
+  "executable":  "C:\\Users\\Boudj\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+  "writerId":  "rlnogadjgmaimjdhnrbt7djdnu9aole2"
+}

@@ -1,0 +1,58 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            rlnogadjgmaimjdhnrbt7djdnu9aole2:
+                codePath: metalearning-symmetries-master\train_synthetic.py
+                codePathLocal: metalearning-symmetries-master\train_synthetic.py
+                email: boudjemaa.salah.275@gmail.com
+                executable: C:\Users\Boudj\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe
+                git:
+                    commit: 0d09429df5c0aad7d61d6a22c8db2f5b8179d504
+                    remote: https://github.com/BoudjemaaS/MAML-MSR.git
+                host: DESKTOP-QQM4QQG
+                os: Windows-11-10.0.26200-SP0
+                program: c:\Users\Boudj\Downloads\metalearning-symmetries-master\metalearning-symmetries-master\train_synthetic.py
+                python: CPython 3.13.9
+                root: ./outputs/synthetic_outputs
+                startedAt: "2025-12-10T16:28:39.035514Z"
+                writerId: rlnogadjgmaimjdhnrbt7djdnu9aole2
+        m: []
+        python_version: 3.13.9
+        t:
+            "1":
+                - 1
+                - 41
+            "2":
+                - 1
+                - 41
+            "4": 3.13.9
+            "5": 0.23.1
+            "8":
+                - 3
+            "12": 0.23.1
+            "13": windows-amd64
+device:
+    value: cuda
+init_inner_lr:
+    value: 0.1
+inner_opt:
+    value: maml
+k_qry:
+    value: 8
+k_spt:
+    value: 5
+lr_mode:
+    value: per_layer
+model:
+    value: fc
+num_inner_steps:
+    value: 1
+num_outer_steps:
+    value: 1000
+outer_lr:
+    value: 0.001
+outer_opt:
+    value: Adam
+problem:
+    value: mnist

@@ -1,0 +1,37 @@
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_setup.py:_flush():80] Current SDK version is 0.23.1
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_setup.py:_flush():80] Configure stats pid to 18556
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_setup.py:_flush():80] Loading settings from C:\Users\Boudj\.config\wandb\settings
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_setup.py:_flush():80] Loading settings from C:\Users\Boudj\Downloads\metalearning-symmetries-master\wandb\settings
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_init.py:setup_run_log_directory():714] Logging user logs to outputs\synthetic_outputs\wandb\run-20251210_172839-cnokm12z\logs\debug.log
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_init.py:setup_run_log_directory():715] Logging internal logs to outputs\synthetic_outputs\wandb\run-20251210_172839-cnokm12z\logs\debug-internal.log
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_init.py:init():841] calling init triggers
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_init.py:init():846] wandb.init called with sweep_config: {}
+config: {'_wandb': {}}
+2025-12-10 17:28:39,038 INFO    MainThread:18556 [wandb_init.py:init():889] starting backend
+2025-12-10 17:28:41,292 INFO    MainThread:18556 [wandb_init.py:init():892] sending inform_init request
+2025-12-10 17:28:41,307 INFO    MainThread:18556 [wandb_init.py:init():900] backend started and connected
+2025-12-10 17:28:41,320 INFO    MainThread:18556 [wandb_init.py:init():970] updated telemetry
+2025-12-10 17:28:41,345 INFO    MainThread:18556 [wandb_init.py:init():994] communicating run to backend with 90.0 second timeout
+2025-12-10 17:28:41,868 INFO    MainThread:18556 [wandb_init.py:init():1041] starting run threads in backend
+2025-12-10 17:28:41,929 INFO    MainThread:18556 [wandb_run.py:_console_start():2521] atexit reg
+2025-12-10 17:28:41,929 INFO    MainThread:18556 [wandb_run.py:_redirect():2369] redirect: wrap_raw
+2025-12-10 17:28:41,930 INFO    MainThread:18556 [wandb_run.py:_redirect():2438] Wrapping output streams.
+2025-12-10 17:28:41,930 INFO    MainThread:18556 [wandb_run.py:_redirect():2461] Redirects installed.
+2025-12-10 17:28:41,931 INFO    MainThread:18556 [wandb_init.py:init():1081] run started, returning control to user process
+2025-12-10 17:28:41,932 INFO    MainThread:18556 [wandb_run.py:_config_callback():1396] config_cb None None {'init_inner_lr': 0.1, 'outer_lr': 0.001, 'k_spt': 5, 'k_qry': 8, 'lr_mode': 'per_layer', 'num_inner_steps': 1, 'num_outer_steps': 1000, 'inner_opt': 'maml', 'outer_opt': 'Adam', 'problem': 'mnist', 'model': 'fc', 'device': 'cuda'}
+2025-12-10 17:28:41,956 INFO    wandb-AsyncioManager-main:18556 [service_client.py:_forward_responses():80] Reached EOF.
+2025-12-10 17:28:41,956 INFO    wandb-AsyncioManager-main:18556 [mailbox.py:close():137] Closing mailbox, abandoning 1 handles.
+2025-12-10 17:28:43,025 ERROR   wandb-AsyncioManager-main:18556 [asyncio_manager.py:fn_wrap_exceptions():183] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "C:\Users\Boudj\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\wandb\sdk\lib\asyncio_manager.py", line 181, in fn_wrap_exceptions
+    await fn()
+  File "C:\Users\Boudj\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\wandb\sdk\lib\service\service_client.py", line 38, in publish
+    await self._send_server_request(request)
+  File "C:\Users\Boudj\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\wandb\sdk\lib\service\service_client.py", line 64, in _send_server_request
+    await self._writer.drain()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\streams.py", line 386, in drain
+    await self._protocol._drain_helper()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\streams.py", line 166, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
