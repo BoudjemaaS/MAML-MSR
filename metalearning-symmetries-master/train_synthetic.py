@@ -122,17 +122,17 @@ def save_checkpoint(net, inner_opt_builder, step_idx, output_dir="./outputs/chec
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init_inner_lr", type=float, default=0.1)
-    parser.add_argument("--outer_lr", type=float, default=0.001)
-    parser.add_argument("--k_spt", type=int, default=5)
-    parser.add_argument("--k_qry", type=int, default=8)
-    parser.add_argument("--lr_mode", type=str, default="per_layer")
-    parser.add_argument("--num_inner_steps", type=int, default=1)
+    parser.add_argument("--init_inner_lr", type=float, default=0.01)
+    parser.add_argument("--outer_lr", type=float, default=0.0005)
+    parser.add_argument("--k_spt", type=int, default=10)
+    parser.add_argument("--k_qry", type=int, default=10)
+    parser.add_argument("--lr_mode", type=str, default="per_param")
+    parser.add_argument("--num_inner_steps", type=int, default=4)
     parser.add_argument("--num_outer_steps", type=int, default=1000)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
     parser.add_argument("--problem", type=str, default="mnist")
-    parser.add_argument("--model", type=str, default="fc")
+    parser.add_argument("--model", type=str, default="share_fc")
     parser.add_argument("--device", type=str, default="cuda")
 
     if not os.path.exists(OUTPUT_PATH):
@@ -176,11 +176,11 @@ def main():
 
     start_time = time.time()
     for step_idx in range(cfg.num_outer_steps):
-        data, _filters = db.next(10, "train")
+        data, _filters = db.next(64, "train")
         train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps)
 
-        if step_idx == 0 or (step_idx + 1) % 100 == 0:
-            test_data, _filters  = db.next(300, "test")
+        if step_idx == 0 or (step_idx + 1) % 50 == 0:
+            test_data, _filters  = db.next(400, "test")
             val_loss = test(
                 step_idx,
                 test_data,
