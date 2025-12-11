@@ -15,15 +15,24 @@ import higher
 import layers
 from synthetic_loader import SyntheticLoader
 from inner_optimizers import InnerOptBuilder
+import matplotlib.pyplot as plt
 #from visualize import visualize_predictions
 
 OUTPUT_PATH = "./outputs/synthetic_outputs"
 
 
-def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter):
+def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter,problem):
     """Main meta-training step."""
     x_spt, y_spt, x_qry, y_qry = data
     
+
+
+    
+    
+
+
+
+
     task_num = x_spt.size()[0]
     querysz = x_qry.size(1)
 
@@ -51,10 +60,12 @@ def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter):
             qry_loss.backward()
     metrics = {"train_loss": np.mean(qry_losses)}
     wandb.log(metrics, step=step_idx)
+    all_metaparams = inner_opt_builder.metaparams.values()
+    torch.nn.utils.clip_grad_norm_(all_metaparams, max_norm=5.0)
     meta_opt.step()
 
 
-def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
+def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
     """Main meta-training step."""
     x_spt, y_spt, x_qry, y_qry = data
     task_num = x_spt.size()[0]
@@ -65,7 +76,10 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
     qry_losses = []
     total_acc = 0
 
-    class_name = [str(i) for i in range(10)]
+    if problem=="mnist":
+        class_name = [str(i) for i in range(10)]
+    else:
+        class_name = ['square', 'ellipse', 'heart']
     all_true_label = []
     all_pred = []   
     for i in range(task_num):
@@ -129,18 +143,18 @@ def save_checkpoint(net, inner_opt_builder, step_idx, output_dir="./outputs/chec
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init_inner_lr", type=float, default=0.005)
+    parser.add_argument("--init_inner_lr", type=float, default=0.001)
     parser.add_argument("--outer_lr", type=float, default=0.001)
     parser.add_argument("--k_spt", type=int, default=10)
     parser.add_argument("--k_qry", type=int, default=10)
     parser.add_argument("--lr_mode", type=str, default="per_param")
-    parser.add_argument("--num_inner_steps", type=int, default=6)
-    parser.add_argument("--num_outer_steps", type=int, default=200)
+    parser.add_argument("--num_inner_steps", type=int, default=3)
+    parser.add_argument("--num_outer_steps", type=int, default=3000)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
-    parser.add_argument("--problem", type=str, default="mnist")
-    parser.add_argument("--model", type=str, default="share_fc")
-    parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--problem", type=str, default="dsprite")
+    parser.add_argument("--model", type=str, default="fc")
+    parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
 
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
@@ -167,6 +181,31 @@ def main():
         else:
             raise ValueError(f"Invalid model {cfg.model} for mnist")
 
+    # AJOUT: Section pour DSprite
+    if cfg.problem == "dsprite":
+        if cfg.model == "fc":
+            net = nn.Sequential(nn.Linear(4096, 3, bias=True)).to(device)
+        elif cfg.model == "share_fc":
+            # Utiliser une couche partagée si disponible
+            net = nn.Sequential(layers.ShareLinearFull(784, 10, bias=True, latent_size=50)).to(device)
+        elif cfg.model == "conv":
+         
+            net = nn.Sequential(nn.Conv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
+        elif cfg.model == "share_conv":
+            # Version avec weight sharing
+            net = nn.Sequential(layers.ShareConv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
+        else:
+            raise ValueError(f"Invalid model {cfg.model} for dsprite")
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -184,16 +223,17 @@ def main():
     start_time = time.time()
     for step_idx in range(cfg.num_outer_steps):
         data, _filters = db.next(32, "train")
-        train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps)
+        train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps,problem=cfg.problem)
 
         if step_idx == 0 or (step_idx + 1) % 50 == 0:
-            test_data, _filters  = db.next(100, "test")
+            test_data, _filters  = db.next(600, "test")
             val_loss = test(
                 step_idx,
                 test_data,
                 net,
                 inner_opt_builder,
                 cfg.num_inner_steps,
+                problem=cfg.problem
             )
             if step_idx > 0:
                 steps_p_sec = (step_idx + 1) / (time.time() - start_time)
