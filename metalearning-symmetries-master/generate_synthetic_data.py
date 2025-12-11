@@ -72,7 +72,7 @@ TYPE_2_PATH = {
 def main():
    
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problem", type=str, default="rank1")
+    parser.add_argument("--problem", type=str, default="mnist")
     args = parser.parse_args()
     out_path = TYPE_2_PATH[args.problem]
     

@@ -64,6 +64,10 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
 
     qry_losses = []
     total_acc = 0
+
+    class_name = [str(i) for i in range(10)]
+    all_true_label = []
+    all_pred = []   
     for i in range(task_num):
         #print("task ", i)
         with higher.innerloop_ctx(
@@ -83,7 +87,8 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
                 if a==b:
                     num_acc+=1
             total_acc += num_acc / len(qry_pred)
-
+            all_true_label.extend(torch.argmax(y_qry[i], dim=1).cpu().numpy())
+            all_pred.extend(torch.argmax(qry_pred, dim=1).cpu().numpy())
             #print("pred" , torch.argmax(qry_pred, dim=1)) #valeurs prédites
             #print("true" , torch.argmax(y_qry[i], dim=1)) #valeurs réelles
             qry_loss = F.mse_loss(qry_pred, y_qry[i])
@@ -99,6 +104,8 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter):
     test_metrics_acc = {"test_accuracy": total_acc}
     wandb.log(test_metrics, step=step_idx)
     wandb.log(test_metrics_acc, step=step_idx)
+    wandb.log({"conf_mat" : wandb.plot.confusion_matrix(probs=None,y_true=all_true_label, preds=all_pred,class_names=class_name)})
+
     return avg_qry_loss
 
 
@@ -122,18 +129,18 @@ def save_checkpoint(net, inner_opt_builder, step_idx, output_dir="./outputs/chec
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init_inner_lr", type=float, default=0.01)
-    parser.add_argument("--outer_lr", type=float, default=0.0005)
+    parser.add_argument("--init_inner_lr", type=float, default=0.005)
+    parser.add_argument("--outer_lr", type=float, default=0.001)
     parser.add_argument("--k_spt", type=int, default=10)
     parser.add_argument("--k_qry", type=int, default=10)
     parser.add_argument("--lr_mode", type=str, default="per_param")
-    parser.add_argument("--num_inner_steps", type=int, default=4)
-    parser.add_argument("--num_outer_steps", type=int, default=1000)
+    parser.add_argument("--num_inner_steps", type=int, default=6)
+    parser.add_argument("--num_outer_steps", type=int, default=200)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
     parser.add_argument("--problem", type=str, default="mnist")
     parser.add_argument("--model", type=str, default="share_fc")
-    parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--device", type=str, default="cpu")
 
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
@@ -176,11 +183,11 @@ def main():
 
     start_time = time.time()
     for step_idx in range(cfg.num_outer_steps):
-        data, _filters = db.next(64, "train")
+        data, _filters = db.next(32, "train")
         train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps)
 
         if step_idx == 0 or (step_idx + 1) % 50 == 0:
-            test_data, _filters  = db.next(400, "test")
+            test_data, _filters  = db.next(100, "test")
             val_loss = test(
                 step_idx,
                 test_data,
