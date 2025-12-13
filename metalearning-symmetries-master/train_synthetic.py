@@ -74,7 +74,7 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
     qry_losses = []
     total_acc = 0
 
-    if problem in ["mnist","rotated_mnist"]:
+    if problem == "mnist":
         class_name = [str(i) for i in range(10)]
     else:
         class_name = ['square', 'ellipse', 'heart']
@@ -148,11 +148,11 @@ def main():
     parser.add_argument("--k_spt", type=int, default=10)
     parser.add_argument("--k_qry", type=int, default=10)
     parser.add_argument("--lr_mode", type=str, default="per_param")
-    parser.add_argument("--num_inner_steps", type=int, default=5)
+    parser.add_argument("--num_inner_steps", type=int, default=3)
     parser.add_argument("--num_outer_steps", type=int, default=5000)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
-    parser.add_argument("--problem", type=str, default="rotated_mnist")
+    parser.add_argument("--problem", type=str, default="mnist")
     parser.add_argument("--model", type=str, default="fc")
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -166,7 +166,7 @@ def main():
     db = SyntheticLoader(device, model=cfg.model, problem=cfg.problem, k_spt=cfg.k_spt, k_qry=cfg.k_qry)
 
     # AJOUT: Section pour MNIST
-    if cfg.problem in ["mnist","rotated_mnist"]:
+    if cfg.problem == "mnist":
         if cfg.model == "fc":
             net = nn.Sequential(nn.Linear(784, 10, bias=True)).to(device)
         elif cfg.model == "share_fc":
@@ -196,14 +196,6 @@ def main():
             net = nn.Sequential(layers.ShareConv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
         else:
             raise ValueError(f"Invalid model {cfg.model} for dsprite")
-
-
-
-
-
-
-
-
 
 
 
@@ -246,19 +238,6 @@ def main():
     accuracy_tab = []
 
 
-    from visualize import evaluate_checkpoint
-
-    '''
-    dossier_path = "./outputs/checkpoints"    
-
-    for file in os.listdir(dossier_path):
-        if file.endswith(".pt"):
-            checkpoint_path = os.path.join(dossier_path, file)
-
-            if str(cfg.num_outer_steps) not in checkpoint_path:
-                accuracy_tab.append(evaluate_checkpoint(cfg,checkpoint_path, db, net, inner_opt_builder, cfg.num_inner_steps))
-            else:
-                accuracy_tab.append(evaluate_checkpoint(cfg,checkpoint_path, db, net, inner_opt_builder, cfg.num_inner_steps, plot=True))
-    '''
+   
 if __name__ == "__main__":
     main()

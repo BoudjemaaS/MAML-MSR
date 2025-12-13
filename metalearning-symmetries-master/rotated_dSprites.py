@@ -70,7 +70,8 @@ def create_rotated_dsprites_task(num_tasks, per_task_rotation, batch_size, trans
 
         train_loader = torch.utils.data.DataLoader(train,  batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=True, generator=g)  #.manual_seed(0))
         test_loader = torch.utils.data.DataLoader(test,  batch_size=test_batch_size, shuffle=False, num_workers=0, pin_memory=True, generator=g)  #.manual_seed(0))
-
+        
+        
         train_loaders.append({
             'loader':train_loader,
             'task':task,
@@ -80,7 +81,11 @@ def create_rotated_dsprites_task(num_tasks, per_task_rotation, batch_size, trans
             'task':task,
             'rot':rotation_degree})
 
-    return train_loaders, test_loaders
+
+
+    
+    
+    return train
 
 
 
