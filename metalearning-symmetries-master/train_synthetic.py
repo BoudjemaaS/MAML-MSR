@@ -148,12 +148,12 @@ def main():
     parser.add_argument("--k_spt", type=int, default=10)
     parser.add_argument("--k_qry", type=int, default=10)
     parser.add_argument("--lr_mode", type=str, default="per_param")
-    parser.add_argument("--num_inner_steps", type=int, default=3)
-    parser.add_argument("--num_outer_steps", type=int, default=5000)
+    parser.add_argument("--num_inner_steps", type=int, default=5)
+    parser.add_argument("--num_outer_steps", type=int, default=1000)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
     parser.add_argument("--problem", type=str, default="mnist")
-    parser.add_argument("--model", type=str, default="fc")
+    parser.add_argument("--model", type=str, default="conv")
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
 
     if not os.path.exists(OUTPUT_PATH):
@@ -173,7 +173,6 @@ def main():
             # Utiliser une couche partagée si disponible
             net = nn.Sequential(layers.ShareLinearFull(784, 10, bias=True, latent_size=50)).to(device)
         elif cfg.model == "conv":
-         
             net = nn.Sequential(nn.Conv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
         elif cfg.model == "share_conv":
             # Version avec weight sharing
@@ -187,13 +186,15 @@ def main():
             net = nn.Sequential(nn.Linear(4096, 3, bias=True)).to(device)
         elif cfg.model == "share_fc":
             # Utiliser une couche partagée si disponible
-            net = nn.Sequential(layers.ShareLinearFull(784, 3, bias=True, latent_size=50)).to(device)
+            net = nn.Sequential(layers.ShareLinearFull(4096, 3, bias=True, latent_size=50)).to(device)
+
         elif cfg.model == "conv":
-         
-            net = nn.Sequential(nn.Conv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
+
+            net = nn.Sequential(nn.Conv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(123008, 3, bias=True)).to(device)
+
         elif cfg.model == "share_conv":
             # Version avec weight sharing
-            net = nn.Sequential(layers.ShareConv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
+            net = nn.Sequential(layers.ShareConv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(123008, 3, bias=True)).to(device)
         else:
             raise ValueError(f"Invalid model {cfg.model} for dsprite")
 
@@ -217,7 +218,7 @@ def main():
         data, _filters = db.next(32, "train")
         train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps,problem=cfg.problem)
 
-        if step_idx == 0 or (step_idx + 1) % 50 == 0:
+        if step_idx == 0 or (step_idx + 1) % 100 == 0:
             test_data, _filters  = db.next(500, "test")
             val_loss = test(
                 step_idx,

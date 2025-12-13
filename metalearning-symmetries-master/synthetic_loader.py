@@ -14,14 +14,26 @@ class SyntheticLoader:
         self.show_num = 0
         
         data = np.load(TYPE_2_PATH[problem])
+        print(f"Loaded data from {TYPE_2_PATH[problem]}")
         self.xs, self.ys, self.ws = data["x"], data["y"], data["w"]
+        print(f"xs shape: {self.xs.shape}, ys shape: {self.ys.shape}, ws shape: {self.ws.shape}")
         # xs shape: (10000, 20, c_i, ...)
         # ys shape: (10000, 20, c_o, ...)
 
+
+        if model in ["conv", "share_conv"]:
+            n_tasks, n_samples, features = self.xs.shape
+            if problem in ["mnist"]:
+                self.xs = self.xs.reshape(n_tasks, n_samples, 1, 28, 28)
+            if problem == "dsprite":
+                self.xs = self.xs.reshape(n_tasks, n_samples, 1, 64, 64)
+
+        '''
         if problem in ["mnist","rotated_mnist","dsprite"] and model in ["conv", "share_conv"]:
             # xs shape: (10000, 20, 784) -> (10000, 20, 1, 28, 28)
             n_tasks, n_samples, features = self.xs.shape
             self.xs = self.xs.reshape(n_tasks, n_samples, 1, 28, 28)
+        '''
 
 
 
