@@ -16,7 +16,7 @@ class RotatedMNISTDataset(torch.utils.data.Dataset):
         self.dataset = torchvision.datasets.MNIST(root=root, train=train, transform=transform, download=download)
         self.transform = transform
         self.rotation_angles = []
-        for task in range(num_tasks):
+        for task in range(int(num_tasks)):
             self.rotation_angles.append(float((task) * per_task_rotation))
 
     def __len__(self):
@@ -53,11 +53,11 @@ def flattened_rotMNIST(num_tasks,
     #print(transforms)
 
     train = RotatedMNISTDataset('./data/', train=True, download=True, transform=transforms, num_tasks=num_tasks, per_task_rotation=per_task_rotation)
-    test = RotatedMNISTDataset('./data/', train=False, download=True, transform=transforms, num_tasks=num_tasks, per_task_rotation=per_task_rotation)
+    test = RotatedMNISTDataset('./data/', train=True, download=True, transform=transforms, num_tasks=num_tasks, per_task_rotation=per_task_rotation)
 
     train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=True, generator=g)
     test_loader = torch.utils.data.DataLoader(test, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True, generator=g)
-
+    print()
     return train_loader, test_loader
 
 

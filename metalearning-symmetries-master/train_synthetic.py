@@ -25,14 +25,6 @@ def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter,problem
     """Main meta-training step."""
     x_spt, y_spt, x_qry, y_qry = data
     
-
-
-    
-    
-
-
-
-
     task_num = x_spt.size()[0]
     querysz = x_qry.size(1)
 
@@ -68,7 +60,13 @@ def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter,problem
 def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
     """Main meta-training step."""
     x_spt, y_spt, x_qry, y_qry = data
+
+
+
+    
+
     task_num = x_spt.size()[0]
+    
     querysz = x_qry.size(1)
 
     inner_opt = inner_opt_builder.inner_opt
@@ -76,7 +74,7 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
     qry_losses = []
     total_acc = 0
 
-    if problem=="mnist":
+    if problem in ["mnist","rotated_mnist"]:
         class_name = [str(i) for i in range(10)]
     else:
         class_name = ['square', 'ellipse', 'heart']
@@ -104,9 +102,11 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
             all_true_label.extend(torch.argmax(y_qry[i], dim=1).cpu().numpy())
             all_pred.extend(torch.argmax(qry_pred, dim=1).cpu().numpy())
             #print("pred" , torch.argmax(qry_pred, dim=1)) #valeurs prédites
-            #print("true" , torch.argmax(y_qry[i], dim=1)) #valeurs réelles
+            #print("true" , torch.argmax(y_qry[i], dim=1)[0].item()) #valeurs réelles
             qry_loss = F.mse_loss(qry_pred, y_qry[i])
             qry_losses.append(qry_loss.detach().cpu().numpy())
+
+            
 
     total_acc = (total_acc / task_num)*100
     print("Accuracy totale: ", total_acc, "%")
@@ -143,16 +143,16 @@ def save_checkpoint(net, inner_opt_builder, step_idx, output_dir="./outputs/chec
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init_inner_lr", type=float, default=0.001)
-    parser.add_argument("--outer_lr", type=float, default=0.001)
+    parser.add_argument("--init_inner_lr", type=float, default=0.0001)
+    parser.add_argument("--outer_lr", type=float, default=0.0001)
     parser.add_argument("--k_spt", type=int, default=10)
     parser.add_argument("--k_qry", type=int, default=10)
     parser.add_argument("--lr_mode", type=str, default="per_param")
-    parser.add_argument("--num_inner_steps", type=int, default=3)
-    parser.add_argument("--num_outer_steps", type=int, default=3000)
+    parser.add_argument("--num_inner_steps", type=int, default=5)
+    parser.add_argument("--num_outer_steps", type=int, default=5000)
     parser.add_argument("--inner_opt", type=str, default="maml")
     parser.add_argument("--outer_opt", type=str, default="Adam")
-    parser.add_argument("--problem", type=str, default="dsprite")
+    parser.add_argument("--problem", type=str, default="rotated_mnist")
     parser.add_argument("--model", type=str, default="fc")
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -166,7 +166,7 @@ def main():
     db = SyntheticLoader(device, model=cfg.model, problem=cfg.problem, k_spt=cfg.k_spt, k_qry=cfg.k_qry)
 
     # AJOUT: Section pour MNIST
-    if cfg.problem == "mnist":
+    if cfg.problem in ["mnist","rotated_mnist"]:
         if cfg.model == "fc":
             net = nn.Sequential(nn.Linear(784, 10, bias=True)).to(device)
         elif cfg.model == "share_fc":
@@ -187,7 +187,7 @@ def main():
             net = nn.Sequential(nn.Linear(4096, 3, bias=True)).to(device)
         elif cfg.model == "share_fc":
             # Utiliser une couche partagée si disponible
-            net = nn.Sequential(layers.ShareLinearFull(784, 10, bias=True, latent_size=50)).to(device)
+            net = nn.Sequential(layers.ShareLinearFull(784, 3, bias=True, latent_size=50)).to(device)
         elif cfg.model == "conv":
          
             net = nn.Sequential(nn.Conv2d(1, 32, 3, bias=True), nn.Flatten(), nn.Linear(21632, 10, bias=True)).to(device)
@@ -226,7 +226,7 @@ def main():
         train(step_idx, data, net, inner_opt_builder, meta_opt, cfg.num_inner_steps,problem=cfg.problem)
 
         if step_idx == 0 or (step_idx + 1) % 50 == 0:
-            test_data, _filters  = db.next(600, "test")
+            test_data, _filters  = db.next(500, "test")
             val_loss = test(
                 step_idx,
                 test_data,

@@ -18,7 +18,7 @@ class SyntheticLoader:
         # xs shape: (10000, 20, c_i, ...)
         # ys shape: (10000, 20, c_o, ...)
 
-        if problem == "mnist" and model in ["conv", "share_conv"]:
+        if problem in ["mnist","rotated_mnist","dsprite"] and model in ["conv", "share_conv"]:
             # xs shape: (10000, 20, 784) -> (10000, 20, 1, 28, 28)
             n_tasks, n_samples, features = self.xs.shape
             self.xs = self.xs.reshape(n_tasks, n_samples, 1, 28, 28)
