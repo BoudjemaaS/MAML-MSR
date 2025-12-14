@@ -60,13 +60,7 @@ def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter,problem
 def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
     """Main meta-training step."""
     x_spt, y_spt, x_qry, y_qry = data
-
-
-
-    
-
     task_num = x_spt.size()[0]
-    
     querysz = x_qry.size(1)
 
     inner_opt = inner_opt_builder.inner_opt
@@ -78,6 +72,7 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
         class_name = [str(i) for i in range(10)]
     else:
         class_name = ['square', 'ellipse', 'heart']
+        
     all_true_label = []
     all_pred = []   
     for i in range(task_num):
