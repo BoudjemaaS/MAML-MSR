@@ -13,10 +13,11 @@ from torchvision import datasets
 import torchvision
 import matplotlib.pyplot as plt
 import rotated_mnist
-from rotated_mnist import flattened_rotMNIST, tasks_rotMNIST, flattened_rotDsprite
+from rotated_mnist import  RotatedMNISTDataset
 import utils
 from random import sample
 from rotated_dSprites import create_rotated_dsprites_task
+
 
 
 
@@ -44,8 +45,8 @@ def generate_mnist_tasks_torch(out_path, rot_percent, angle_rot, num_tasks=20000
         all_images_rotated = []
         all_labels_rotated = []
         
-        for i in flattened_rotMNIST(360/angle_rot,angle_rot,1)[0]: #Parcours des images pivotées générées
-            img, label = i[0],i[1] # Déclenche __getitem__ et donc la rotation
+        for i in RotatedMNISTDataset(per_task_rotation=angle_rot): #Parcours des images pivotées générées
+            img, label = i # Déclenche __getitem__ et donc la rotation
             all_images_rotated.append(img)  
             all_labels_rotated.append(label)
 
@@ -105,7 +106,7 @@ def generate_dsprite_tasks_torch(out_path, num_tasks=20000, samples_per_task=20,
     
     '''
     #Génération des données "classiques"
-    train_dataset = np.load('./data/dSprites/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='bytes')
+    train_dataset = np.load('./data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='bytes')
     
     # Récupération et convertion (float + tensor) des images
     all_images_np = train_dataset['imgs'].astype(np.float32)

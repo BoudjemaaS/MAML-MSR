@@ -11,7 +11,7 @@ class dSpritesPerRotationTask(Dataset):
             target_rotation (int): Target rotation bin (0-39, corresponding to specific degrees).
             num_shapes (int): Number of shapes to classify (default: 3).
         """
-        data = np.load(path+'dSprites/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='bytes')
+        data = np.load(path+'dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='bytes')
         self.images = data['imgs']  # Binary images (64x64)
         self.latents = data['latents_classes']  # Latent classes
         self.transform = transform
