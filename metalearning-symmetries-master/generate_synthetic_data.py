@@ -16,7 +16,7 @@ import rotated_mnist
 from rotated_mnist import  RotatedMNISTDataset
 import utils
 from random import sample
-from rotated_dSprites import create_rotated_dsprites_task
+from rotated_dSprites import dSpritesPerRotationTask
 
 
 
@@ -121,14 +121,14 @@ def generate_dsprite_tasks_torch(out_path, num_tasks=20000, samples_per_task=20,
     all_images_flat = all_images.reshape(-1, input_size) #(737280,64,64) -> flattened -> (737280,4096) 
 
 
-
+    
 
     #Generation des données rotated 
     if rot_percent > 0: #Seulement si nécessaire (pourcentage > 0)
         all_images_rotated = []
         all_labels_rotated = []
 
-        for i in create_rotated_dsprites_task(num_tasks=1,batch_size=10000,per_task_rotation=angle_rot): #Parcours des images pivotées générées
+        for i in dSpritesPerRotationTask(angle_rot=angle_rot): #Parcours des images pivotées générées
             img, label = i[0],i[1] # Déclenche __getitem__ et donc la rotation
             all_images_rotated.append(img)  
             all_labels_rotated.append(label)
@@ -193,7 +193,7 @@ def main():
     out_path = TYPE_2_PATH[args.problem]
     
     if args.problem == "dsprite":
-        generate_dsprite_tasks_torch(out_path,num_tasks=20000)
+        generate_dsprite_tasks_torch(out_path, angle_rot=args.angle_rot)
 
     elif args.problem == "mnist":
         generate_mnist_tasks_torch(out_path,num_tasks=20000, rot_percent=args.rot_percent, angle_rot=args.angle_rot)
