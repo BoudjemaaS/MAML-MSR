@@ -36,9 +36,9 @@ class SyntheticLoader:
 
     def next(self, n_tasks, mode="train"):
         '''
-        Retourne la prochaine tache avec un split support/query
+        Retourne la prochaine tâche avec un split support/query
         
-        :param n_tasks: Nombre de taches à retourner
+        :param n_tasks: Nombre de tâches à retourner
         '''
 
         rnge = self.train_range if mode == "train" else self.test_range

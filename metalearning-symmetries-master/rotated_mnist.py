@@ -46,5 +46,5 @@ class RotatedMNISTDataset(torch.utils.data.Dataset):
 
         train_loader = torch.utils.data.DataLoader((rotated_image, label), batch_size=1000, shuffle=False, num_workers=0, pin_memory=True, generator=g)
         
-        return train_loader.dataset #retour de l'image pivotée et de son label
+        return train_loader.dataset #Retour de l'image pivotée et de son label
 

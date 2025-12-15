@@ -39,7 +39,7 @@ class dSpritesPerRotationTask(Dataset):
         label = self.labels[idx]
 
         image = torch.tensor(image).unsqueeze(0)  # Reshape (1, 64, 64)
-        label = torch.tensor(label, dtype=torch.long)  # Convertion ->  Tensor
+        label = torch.tensor(label, dtype=torch.long)  # Conversion ->  Tensor
 
         return image, label
 

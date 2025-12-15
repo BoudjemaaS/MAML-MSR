@@ -40,7 +40,7 @@ def generate_mnist_tasks_torch(out_path, rot_percent, angle_rot, num_tasks=20000
     all_images = all_images.reshape(-1, input_size)  # (60000, 28, 28) -> flattened -> (60000, 784)
     all_labels = train_dataset.targets 
 
-    #Generation des données rotated 
+    #Génération des données rotated 
     if rot_percent > 0: #Seulement si nécessaire (pourcentage > 0)
         all_images_rotated = []
         all_labels_rotated = []
@@ -67,7 +67,7 @@ def generate_mnist_tasks_torch(out_path, rot_percent, angle_rot, num_tasks=20000
     xs, ys, ws= [], [], []
     
     for task_idx in range(num_tasks): 
-        #Pour chaque taches
+        #Pour chaque tâches
 
         # Réinitialisation aléatoirement et suavegarde des poids 
         nn.init.normal_(linear_layer.weight, mean=0, std=0.01)
@@ -107,11 +107,11 @@ def generate_dsprite_tasks_torch(out_path, num_tasks=20000, samples_per_task=20,
     #Génération des données "classiques"
     train_dataset = np.load('./data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='bytes')
     
-    # Récupération et convertion (float + tensor) des images
+    # Récupération et conversion (float + tensor) des images
     all_images_np = train_dataset['imgs'].astype(np.float32)
-    all_images = torch.from_numpy(all_images_np) 
+    all_images = torch.from_numpy(all_images_np)
 
-    # Récupération et convertion (float + tensor) des labels
+    # Récupération et conversion (float + tensor) des labels
     all_labels_np = train_dataset['latents_classes'][:, 1].astype(np.long)
     all_labels = torch.from_numpy(all_labels_np)
 
@@ -122,7 +122,7 @@ def generate_dsprite_tasks_torch(out_path, num_tasks=20000, samples_per_task=20,
 
     
 
-    #Generation des données rotated 
+    #Génération des données rotated 
     if rot_percent > 0: #Seulement si nécessaire (pourcentage > 0)
         all_images_rotated = []
         all_labels_rotated = []
@@ -149,9 +149,9 @@ def generate_dsprite_tasks_torch(out_path, num_tasks=20000, samples_per_task=20,
     xs, ys, ws= [], [], []
     
     for task_idx in range(num_tasks):
-        #Pour chaque taches
+        #Pour chaque tâches
 
-        # # Réinitialisation aléatoirement et suavegarde des poids
+        # # Réinitialisation aléatoirement et sauvegarde des poids
         nn.init.normal_(linear_layer.weight, mean=0, std=0.01)
         nn.init.zeros_(linear_layer.bias)
         weights = linear_layer.weight.detach().cpu().numpy()  # (3, 4096)
