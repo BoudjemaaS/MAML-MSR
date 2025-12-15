@@ -93,7 +93,6 @@ def generate_mnist_tasks_torch(out_path, rot_percent, angle_rot, num_tasks=20000
     np.savez(out_path, x=xs, y=ys, w=ws) 
     
 
-
 def generate_dsprite_tasks_torch(out_path, num_tasks=20000, samples_per_task=20,angle_rot=45, rot_percent=20):
     '''
     Génération et stockage de données Dsprite avec une certaine proportion d'images pivotées.

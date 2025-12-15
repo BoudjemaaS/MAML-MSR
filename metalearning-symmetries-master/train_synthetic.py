@@ -40,7 +40,7 @@ def train(step_idx, data, net, inner_opt_builder, meta_opt, n_inner_iter):
 
     meta_opt.zero_grad() #Réinitialisation des gradients pour la boucle exterieure
 
-    for i in range(task_num):#Boucle exterieure
+    for i in range(task_num):
         
 
         with higher.innerloop_ctx(net, inner_opt, copy_initial_weights=False, override=inner_opt_builder.overrides,
@@ -142,8 +142,8 @@ def test(step_idx, data, net, inner_opt_builder, n_inner_iter,problem):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init_inner_lr", type=float, default=0.0001) # Learning rate de la boucle interieure
-    parser.add_argument("--outer_lr", type=float, default=0.0001) # Learning rate de la boucle exterieure
+    parser.add_argument("--init_inner_lr", type=float, default=0.001) # Learning rate de la boucle interieure
+    parser.add_argument("--outer_lr", type=float, default=0.001) # Learning rate de la boucle exterieure
     parser.add_argument("--k_spt", type=int, default=10) # Taille d'echantillon de train par tache  k_spt+k_qry <= 20
     parser.add_argument("--k_qry", type=int, default=10) # Taille d'echantillon de test par tache
     parser.add_argument("--lr_mode", type=str, default="per_param") #Type de Learning rate ["per_param","per_layer"]
